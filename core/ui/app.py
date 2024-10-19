@@ -1,8 +1,8 @@
 from kivy import Config
 
 Config.set("graphics", "resizable", "1")
-Config.set("graphics", "width", "1920")
-Config.set("graphics", "height", "1080")
+Config.set("graphics", "width", "1600")
+Config.set("graphics", "height", "900")
 
 from kivy.logger import Logger
 Logger.setLevel("INFO")
@@ -20,8 +20,16 @@ class GameApp(App):
     move_left = BooleanProperty(False)
     jump = BooleanProperty(False)
 
+    @staticmethod
+    def to_window(*_):
+        return 0, 0  # avoid crash on Window move due to cls.Keyboard
+
+    def open_settings(self):
+        pass  # Disable Kivy Config Panel on F1 press
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.y = 0
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down, on_key_up=self._on_keyboard_up)
 
