@@ -7,6 +7,7 @@ del res, os
 
 from .app import GameApp
 from .game_field import GameField
+from .progressbar import BeerProgressBar
 
 __all__ = (
     "GameApp",
