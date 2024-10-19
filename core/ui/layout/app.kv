@@ -1,0 +1,38 @@
+#:import Window kivy.core.window.Window
+#:import ew kivy.uix.effectwidget
+
+ScreenManager:
+    id: rsm
+
+    # Screen:
+    #     name: "splash"
+    #     canvas.before:
+    #         Color:
+    #             rgba: .2, .2, .2, 1
+    #         Rectangle:
+    #             size: self.size
+    #             pos: self.pos
+
+    #     MDSpinner:
+    #         id: spinner
+    #         size_hint: None, None
+    #         size: dp(46), dp(46)
+    #         pos_hint: {'center_x': .5, 'center_y': .5}
+    #         active: True
+
+    Screen:
+        name: "main"
+
+        MDScreenManager:
+            MDScreen:
+                name: "game"
+
+                EffectWidget:
+                    id: effect_widget
+                    size_hint: 1, 1
+                    effects: () #ew.ScanlinesEffect(),
+
+                    GameField:
+                        id: game_field
+                        offsetX: app.offsetX
+                        size_hint: 1, 1

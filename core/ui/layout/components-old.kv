@@ -1,0 +1,522 @@
+
+<-ListLine>:  # Patch/extension from BaseListItem kvlang code
+    size_hint_y: None
+    height: dp(64)
+
+    canvas:
+        Color:
+            rgba:
+                ( \
+                self.theme_cls.divider_color \
+                if root.divider is not None \
+                else (0, 0, 0, 0) \
+                ) \
+                if not root.divider_color \
+                else \
+                root.divider_color
+
+        Line:
+            points:
+                ( \
+                root.x ,root.y, root.x + self.width, root.y) \
+                if root.divider == "Full" else \
+                (root.x + root._txt_left_pad, root.y, \
+                root.x + self.width - root._txt_left_pad-root._txt_right_pad, \
+                root.y \
+                )
+        Color:
+            rgba: root.bg_color if root.bg_color else (0, 0, 0, 0)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: root.radius
+
+    MDBoxLayout:
+        id: container
+        orientation: "horizontal"
+        size_hint_y: 1
+        pos: root.pos
+
+        MDBoxLayout:
+            id: _left_container
+            orientation: "horizontal"
+            size_hint_y: 1
+            size_hint_x: None
+            width: self.minimum_width
+            pos_hint: {"center_y": .5}
+
+        MDBoxLayout:
+            id: _text_container
+            orientation: "vertical"
+            size_hint_y: None
+            height: self.minimum_height
+            pos_hint: {"center_y": .5}
+            padding:
+                root._txt_left_pad, root._txt_top_pad, \
+                root._txt_right_pad, root._txt_bot_pad
+            MDLabel:
+                id: _lbl_primary
+                text: root.text
+                font_style: root.font_style
+                theme_text_color: root.theme_text_color
+                text_color: root.text_color
+                size_hint_y: None
+                height: self.texture_size[1]
+                markup: True
+                shorten_from: "right"
+                shorten: True
+
+            MDLabel:
+                id: _lbl_secondary
+                text: "" if root._num_lines == 1 else root.secondary_text
+                font_style: root.secondary_font_style
+                theme_text_color: root.secondary_theme_text_color
+                text_color: root.secondary_text_color
+                size_hint_y: None
+                height: 0 if root._num_lines == 1 else self.texture_size[1]
+                shorten: True
+                shorten_from: "right"
+                markup: True
+
+            MDLabel:
+                id: _lbl_tertiary
+                text: "" if root._num_lines == 1 else root.tertiary_text
+                font_style: root.tertiary_font_style
+                theme_text_color: root.tertiary_theme_text_color
+                text_color: root.tertiary_text_color
+                size_hint_y: None
+                height: 0 if root._num_lines == 1 else self.texture_size[1]
+                shorten: True
+                shorten_from: "right"
+                markup: True
+
+        MDBoxLayout:
+            id: _right_container
+            orientation: "horizontal"
+            size_hint_y: 1
+            size_hint_x: None
+            width: self.minimum_width
+            pos_hint: {"center_y": .5}
+
+<FlagIcon>:
+    size_hint: None, .6
+    pos_hint: {"center_y": .5, "center_x": .5}
+    width: self.height * self.image_ratio
+
+<CountryItem>:
+    text: self.self_country.name if self.self_country else "Inconnu"
+    secondary_text: f"Capitale : {self.self_country.capital}" if self.self_country else ""
+    flag: self.flag_path
+
+<AllianceCountryItem>:
+    text: self.country.name
+    secondary_text: f"Capitale : {self.country.capital}" if self.country else ""
+
+<WarCountryItem>:
+    text: self.country.name
+    secondary_text: f"Capitale : {self.country.capital}" if self.country else ""
+    icon_color: (0.91, 0.259, 0.137, 1) if root.attack else (0.137, 0.522, 0.91, 1)
+    icon: "sword" if root.attack else "shield-half-full"
+
+#############################################################################################################
+
+<SimuConfigContent>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "120dp"
+
+    MDTextField:
+        id: seed
+        hint_text: "Seed"
+        helper_text: "Entrez le nombre qui la seed de la simulation"
+        helper_text_mode: "on_focus"
+        max_text_length: 20
+        required: True
+        on_text: root.check_seed()
+
+    MDTextField:
+        id: days
+        hint_text: "Jours"
+        helper_text: "Entrez le nombre de jours à simuler"
+        helper_text_mode: "on_focus"
+        max_text_length: 5
+        required: True
+        on_text: root.check_days()
+
+#############################################################################################################
+
+
+<AppData>:
+    selected_country: app.selected_country
+    country_data: app.country_data
+    country: app.country
+    world: app.world
+    simu: app.simu
+
+#############################################################################################################
+
+<Earth>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+
+#############################################################################################################
+
+<Rail>:
+    size_hint_x: None
+    width: dp(72)
+    padding: dp(8)
+    spacing: dp(8)
+    orientation: "vertical"
+    adaptive_size: True
+    pos_hint: {"top": 1}
+
+<RailButton>:
+    line_color: 0, 0, 0, 0
+
+#############################################################################################################
+
+<TitleLabel@MDLabel>:
+    halign: "center"
+    font_style: "H5"
+    theme_text_color: "Custom"
+    text_color: app.theme_cls.primary_color
+    size_hint_x: .8
+
+<NavTitle>:
+    adaptive_height: True
+    orientation: "horizontal"
+
+    MDIcon:
+        icon: root.icon
+        pos_hint: {"center_y": .5}
+        size_hint: None, 1
+        width: self.height
+
+    MDLabel:
+        text: root.text
+        halign: "center"
+        font_style: "H5"
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.primary_color
+        size_hint_x: .8
+
+    MDIconButton:
+        icon: "arrow-right"
+        on_release: if root.nav: root.nav.set_state("close")
+
+#############################################################################################################
+
+
+<Graph>:
+    size_hint_x: 1
+    size_hint_y: None
+    height: self.width
+
+
+#############################################################################################################
+
+<BoxLayoutH@MDBoxLayout>:
+    orientation: "horizontal"
+
+<BoxLayoutV@MDBoxLayout>:
+    orientation: "vertical"
+
+#############################################################################################################
+
+<DateTimeButton>:
+    adaptive_size: True
+    pos_hint: {"center_y": .5}
+    line_color: 0, 0, 0, 0
+
+<BreakingNews>:
+    orientation: "vertical"
+    BoxLayoutH:
+        adaptive_height: True
+        md_bg_color: (0.2, 0.2, 0.2, 1)
+
+        DateTimeButton:
+            icon: "play-outline"
+            text: "Démarrer"
+
+        MDLabel:
+            adaptive_height: True
+            text: root.title
+            halign: "center"
+            font_style: "H5"
+            theme_text_color: "Custom"
+            text_color: (1, 1, 1, 1)
+            pos_hint: {"center_y": .5}
+
+    BoxLayoutH:
+        adaptive_size: True
+        md_bg_color: (0.2, 0.2, 0.2, 1)
+        padding: 0, 0, 2, 2
+
+        MDLabel:
+            adaptive_size: True
+            md_bg_color: (0.7686274509803922, 0.14901960784313725, 0.16470588235294117, 1)
+            text: "BREAKING"
+            halign: "center"
+            font_style: "H5"
+            theme_text_color: "Custom"
+            text_color: (1, 1, 1, 1)
+
+        MDLabel:
+            adaptive_size: True
+            md_bg_color: (1, 1, 1, 1)
+            text: "NEWS"
+            halign: "center"
+            font_style: "H5"
+            theme_text_color: "Custom"
+            text_color: (0.7686274509803922, 0.14901960784313725, 0.16470588235294117, 1)
+
+
+    MDLabel:
+        opacity: root.ct_opacity
+        text: root.content
+        multiline: True
+        halign: "center"
+        font_style: "H6"
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.primary_color
+
+
+#############################################################################################################
+#############################################################################################################
+
+<IdeologyItem>:
+    tooltip_text: self.name + " " + str(round(self.size_hint_x * 100, 1)) + " %"
+    size_hint_y: 1
+    size_hint_x: 0
+    tooltip_radius: [dp(12)]
+    tooltip_bg_color: (.3, .3, .3, 1)
+    tooltip_text_color: (.9, .9, .9, 1)
+    canvas:
+        Color:
+            rgba: (.1, .1, .1, 1) if self.size_hint_x == 0 else self.color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<IdeologyAltItem>:
+    tooltip_text: "Aucune idéologie"
+    size_hint_x: 1
+    color: .1, .1, .1, 1
+
+<IdeologyBar>:
+    orientation: "horizontal"
+    size_hint_y: None
+    size_hint_x: .9
+    pos_hint: {"center_x": .5}
+    height: dp(24)
+    padding: 2
+    canvas.before:
+        Color:
+            rgba: .1, .1, .1, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [self.height / 2, ]
+        StencilPush
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: (self.x + 2, self.y + 2)
+            size: (self.width - 4, self.height - 4)
+            radius: [(self.height - 4) / 2, ]
+        StencilUse
+    canvas.after:
+        StencilUnUse
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: (self.x + 2, self.y + 2)
+            size: (self.width - 4, self.height - 4)
+            radius: [(self.height - 4) / 2, ]
+        StencilPop
+
+#############################################################################################################
+#############################################################################################################
+
+
+
+<InfoLabel@MDLabel>:
+    font_style: "Body1"
+    size_hint: None, None
+    text_size: self.parent.width / 2, None
+    size: self.texture_size
+    padding: dp(10), dp(10)
+    pos_hint: {"x": 0}
+
+<InfoScreen>:
+    name: "stats"
+    flag_path: self.flagmgr.get(self.country.id).flag_path if self.country and self.flagmgr else ""
+
+    BoxLayoutV:
+        NavTitle:
+            text: root.country.name if root.country else "Information"
+            icon: "chart-line"
+            nav: root.nav
+
+        ScrollView:
+            BoxLayoutV:
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(10)
+
+                AsyncImage:
+                    source: root.flag_path if root.flag_path else ""
+                    size_hint: .5, None
+                    opacity: 1 if root.flag_path else 0
+                    height: self.width / self.image_ratio if root.flag_path else 0
+                    pos_hint: {"center_x": .5}
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(10)
+
+                IdeologyBar:
+                    ideology: root.country_data.ideology if root.country_data else None
+
+                MDGridLayout:
+                    cols: 2
+                    adaptive_height: True
+                    size_hint_x: 1
+
+                    InfoLabel:
+                        text: "Capitale"
+
+                    InfoLabel:
+                        text: root.country.capital if root.country else "-"
+
+                    InfoLabel:
+                        text: "Superficie"
+
+                    InfoLabel:
+                        text: root.norm(str(round(root.country.surface))) + " km²" if root.country else "-"
+
+                    InfoLabel:
+                        text: "Population"
+
+                    InfoLabel:
+                        text: root.norm(str(round(root.country_data.population))) if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "Taux de production"
+
+                    InfoLabel:
+                        text: str(round(root.country_data.prod_rate * 100, 2)) + " %" if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "Taux d'éducation"
+
+                    InfoLabel:
+                        text: str(round(root.country_data.edu_rate * 100, 2)) + " %" if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "indice de dév. humain"
+
+                    InfoLabel:
+                        text: str(round(root.country_data.health_rate * 100, 2)) + " %" if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "Produit intérieur brut"
+
+                    InfoLabel:
+                        text: root.norm(str(round(root.country_data.gdp))) + " $" if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "Dette publique"
+
+                    InfoLabel:
+                        text: root.norm(str(round(root.country_data.debt))) + " $" if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "Dépenses publiques"
+
+                    InfoLabel:
+                        text: root.norm(str(round(root.country_data.expenses))) + " $" if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "Recettes publiques"
+
+                    InfoLabel:
+                        text: root.norm(str(round(root.country_data.incomes))) + " $" if root.country_data else "-"
+
+                    InfoLabel:
+                        text: "Budget"
+
+                    InfoLabel:
+                        text: root.norm(str(round(root.country_data.treasury))) + " $" if root.country_data else "-"
+
+                PopulationGraph
+                GDPGraph
+
+
+#############################################################################################################
+#############################################################################################################
+
+<EnableMap@MDCheckbox+MDTooltip>
+    pos_hint: {'center_y': .5}
+    size_hint_x: None
+    width: self.height
+
+<AlliancePanelLine>:
+    text: self.alliance.name if self.alliance else "Aucune alliance"
+    secondary_text: f"{len(self.alliance.members)} membres" if self.alliance else ""
+
+
+<AllianceScreen>:
+    name: "alliances"
+    enable_alliance: switch.active
+
+    BoxLayoutV:
+        BoxLayoutH:
+            size_hint_y: None
+            height: self.minimum_height
+
+            NavTitle:
+                text: "Alliances"
+                icon: "shield-link-variant-outline"
+                nav: root.nav
+
+            EnableMap:
+                id: switch
+                tooltip_text: "Afficher les alliances sur la carte"
+
+        MDScrollView:
+            BoxLayoutV:
+                size_hint_y: None
+                height: self.minimum_height
+                id: list
+
+#############################################################################################################
+#############################################################################################################
+
+<WarPanelLine>:
+    text: f"{len(self.war.attackers)} VS {len(self.war.defenders)}" if self.war else "Guerre inconnue"
+    secondary_text: f"Débutée le {self.war.start_date.strftime('%d/%m/%Y')} ({self.war.time} jours)" if self.war else ""
+
+
+<WarScreen>:
+    name: "wars"
+
+    BoxLayoutV:
+        NavTitle:
+            icon: "sword-cross"
+            text: "Guerres"
+            nav: root.nav
+
+        MDScrollView:
+            BoxLayoutV:
+                size_hint_y: None
+                height: self.minimum_height
+                id: list
+
+
