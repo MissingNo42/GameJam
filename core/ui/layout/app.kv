@@ -30,9 +30,12 @@ ScreenManager:
                 EffectWidget:
                     id: effect_widget
                     size_hint: 1, 1
-                    effects: () #ew.ScanlinesEffect(),
+                    effects: game_field.effects
 
                     GameField:
                         id: game_field
-                        offsetX: app.offsetX
+                        move_left: app.move_left
+                        move_right: app.move_right
+                        jump: app.jump
                         size_hint: 1, 1
+

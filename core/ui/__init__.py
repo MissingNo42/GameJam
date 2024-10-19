@@ -6,7 +6,7 @@ del res, os
 
 
 from .app import GameApp
-from .GameField import GameField
+from .game_field import GameField
 
 __all__ = (
     "GameApp",
