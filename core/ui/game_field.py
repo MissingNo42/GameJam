@@ -4,6 +4,7 @@ import kivy.resources
 from core.ui.tile import Tile
 from kivy.properties import NumericProperty, BooleanProperty, ListProperty
 from kivy.uix.effectwidget import ScanlinesEffect
+from kivy.clock import Clock
 
 from .player import Player
 from .theme import Theme
@@ -15,6 +16,9 @@ __all__ = (
 
 
 class GameField(Theme):
+    FPS = 30
+
+
     move_right = BooleanProperty(False)
     move_left = BooleanProperty(False)
     jump = BooleanProperty(False)
@@ -35,6 +39,7 @@ class GameField(Theme):
         self.bg_03 = None
         self.player = None
         self.progressbar = None
+        
         # self.effects = [ScanlinesEffect()]
 
     def on_size(self, instance, value):
@@ -74,6 +79,7 @@ class GameField(Theme):
                                            theme=self.theme)
 
         self.level = 1
+        Clock.schedule_interval(self.update, 1 / self.FPS)
 
     def on_level(self, instance, value):
         path = kivy.resources.resource_find(f"levels/level_{value:02}.json")
@@ -131,3 +137,8 @@ class GameField(Theme):
     
     def grid_size_y(self) -> int:
         return len(self.map)
+    
+
+    def update(self, dt):
+        self.player.update(dt)
+

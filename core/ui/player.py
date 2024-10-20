@@ -1,5 +1,4 @@
 import math
-from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty, StringProperty
 from kivy.uix.image import Image
@@ -12,19 +11,20 @@ __all__ = (
 
 
 class Player(Image, Theme):
-    FPS = 30
 
-    ACCEL_X = 5 / FPS
-    ACCEL_Y = 5 / FPS
+    """
+        ACCEL_X = 5 / FPS
+        ACCEL_Y = 5 / FPS
 
-    MAX_SPEED_X = 1.5 / FPS
-    MAX_SPEED_Y = 2 / FPS
+        MAX_SPEED_X = 1.5 / FPS
+        MAX_SPEED_Y = 2 / FPS
 
-    MIN_SPEED_X = 0.01
-    MIN_SPEED_Y = 0.01
+        MIN_SPEED_X = 0.01
+        MIN_SPEED_Y = 0.01
 
-    SPEED_ATT_X = 0.80
-
+        SPEED_ATT_X = 0.80
+    """
+    
     accel_x = NumericProperty(0)
     accel_y = NumericProperty(0)
 
@@ -60,8 +60,6 @@ class Player(Image, Theme):
     def on_kv_post(self, base_widget):
         self.pos_x = self.ipos_x
         self.render()
-
-        Clock.schedule_interval(self.run_physic, 1 / self.FPS)
 
     def on_factor(self, instance, value):
         self.size = (self.factor, self.factor)
@@ -157,7 +155,7 @@ class Player(Image, Theme):
 
         
 
-    def run_physic(self, dt):
+    def update(self, dt):
         #self.move(0.01, 0)
         #self.move(0, 0.001)
 
