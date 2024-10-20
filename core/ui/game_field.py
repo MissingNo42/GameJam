@@ -169,6 +169,8 @@ class GameField(Theme):
             self.player.banana_tick = self.tick
             self.player.set_state("chute")
             self.clear_block(x, y)
+            if self.life > 40:
+                self.life -= 5
 
 
     def grid_size_x(self) -> int:
