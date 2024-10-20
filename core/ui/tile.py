@@ -21,6 +21,7 @@ class Tile(Image, Theme):
         self.x = self.pos_x - value * self.paralax
 
         if self.paralax != 1:
+            if not self.texture: return
             tratio = self.texture.width / self.texture.height
             limit = tratio * self.height
 
