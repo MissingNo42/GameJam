@@ -48,7 +48,7 @@ class GameField(Theme):
         self.player = None
         self.progressbar = None
 
-        self.effects = [ChromaticAberationSickness0()]
+        self.effects = []
 
     def on_size(self, instance, value):
         self.bg_00.size = (self.width * 4, self.height)
@@ -130,7 +130,8 @@ class GameField(Theme):
                                          y=y * self.tile_size,
                                          pos_x=x * self.tile_size,
                                          offsetX=self.offsetX,
-                                         size=(self.tile_size, self.tile_size)))
+                                         size=(self.tile_size, self.tile_size),
+                                         theme=self.theme))
 
     def on_offsetX(self, instance, value):
         for child in self.children:
@@ -145,7 +146,7 @@ class GameField(Theme):
 
     def is_wall(self, block: int) -> bool:
         return block == 1
-    
+
     def is_semi_solid(self, block: int) -> bool:
         return block == 6
 
@@ -170,8 +171,6 @@ class GameField(Theme):
             self.clear_block(x, y)
 
 
-
-
     def grid_size_x(self) -> int:
         return len(self.map[0])
 
@@ -191,11 +190,24 @@ class GameField(Theme):
                         p.start(i)
                     else:
                         a.start(i)
+                self.effects = [ChromaticAberationSickness0()]
+            return
+
+        if value < 10:
+            self.effects = [ChromaticAberationSickness0()]
+
+        elif value < 30:
+            self.effects = [ChromaticAberationSickness1()]
+
+        elif value < 70:
+            self.effects = [ChromaticAberationSickness2()]
+
+        else:
+            self.effects = [ChromaticAberationSickness3()]
 
 
     def update(self, dt):
         self.tick += 1
         self.player.update(dt)
-        #self.life -= 0.8
-        self.life -= 0.2
+        self.life -= 0.15
 
