@@ -68,7 +68,7 @@ class Player(Image, Theme):
     def on_ipos_x(self, instance, value):
         self.pos_x = self.ipos_x
         self.render()
-    
+
     def on_ipos_y(self, instance, value):
         self.pos_y = self.ipos_y
         self.render()
@@ -87,6 +87,8 @@ class Player(Image, Theme):
         if dx != 0 and dy != 0:
             return self.move(dx, 0) and self.move(0, dy)
         
+        game = self.gamefield
+        
         hitbox_x = 1 - 2 * self.DEADZONE_X
         hitbox_y = 1 - self.DEADZONE_Y
     
@@ -95,13 +97,9 @@ class Player(Image, Theme):
 
         dest_x = src_x + dx
         dest_y = src_y + dy
-
-        lmap = None
-        if not (self.gamefield and (lmap := self.gamefield.map)):
-            return False
         
-        grid_size_x = len(lmap[0])
-        grid_size_y = len(lmap)
+        grid_size_x = game.grid_size_x()
+        grid_size_y = game.grid_size_y()
 
         x_min = max(math.floor(dest_x), 0)
         y_min = max(math.floor(dest_y), 0)
@@ -117,8 +115,8 @@ class Player(Image, Theme):
         for block_x in range(x_min, x_max):
             for block_y in range(y_min, y_max):
 
-                block = lmap[block_y][block_x]
-                is_solid = self.gamefield.is_wall(block)
+                block = game.get_block(block_x, block_y)
+                is_solid = game.is_wall(block)
                 if not is_solid: continue
 
                 # x
@@ -127,6 +125,7 @@ class Player(Image, Theme):
                         if dest_x + hitbox_x > block_x:
                             dest_x = block_x - hitbox_x
                             collision_ok = False
+                            
                     else: 
                         if dest_x < block_x + block_hitbox_x:
                             dest_x = block_x + block_hitbox_x
@@ -176,7 +175,7 @@ class Player(Image, Theme):
         if not self.move(0, self.speed_y):
             if self.speed_y < 0:
                 on_ground = True
-            self.speed_y = 0
+                self.speed_y = 0
 
         jump_add = 25/30.
         if on_ground and self.jump:

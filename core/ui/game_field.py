@@ -117,5 +117,17 @@ class GameField(Theme):
         for child in self.children:
             child.offsetX = value
 
+    def get_block(self, x : int, y : int) -> Tile:
+        return self.map[y][x]
+
     def is_wall(self, block: int) -> bool:
-        return block != 0;
+        return block != 0
+    
+    def trigger_block(self, x : int, y : int):
+        pass
+
+    def grid_size_x(self) -> int:
+        return len(self.map[0])
+    
+    def grid_size_y(self) -> int:
+        return len(self.map)

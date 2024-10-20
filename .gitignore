@@ -1,3 +1,9 @@
 .icarukTime.json
 
 /.vscode
+
+/core/ui/__pycache__
+/core/__pycache__
+
+
+*.pyc
