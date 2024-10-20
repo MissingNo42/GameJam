@@ -199,6 +199,7 @@ class Player(Image, Theme):
         on_ground = False
 
         if self.pos_y <= 0:
+            # dead by falling off grid
             (self.pos_x, self.pos_y) = self.position_safe.pop(0)
             self.speed_x = 0
             self.speed_y = 0
