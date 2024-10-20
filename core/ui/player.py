@@ -45,8 +45,9 @@ class Player(Image, Theme):
 
     factor = NumericProperty(0)
 
-    DEADZONE_X = .15
-    DEADZONE_Y = .3
+    PLAYER_SIZE = 1.5
+    DEADZONE_X = .2 * PLAYER_SIZE
+    DEADZONE_Y = .15 * PLAYER_SIZE
 
     # idle, walk, jump, fall
     state = StringProperty("idle")
@@ -62,7 +63,7 @@ class Player(Image, Theme):
         self.render()
 
     def on_factor(self, instance, value):
-        self.size = (self.factor, self.factor)
+        self.size = (self.factor * 1.5, self.factor * 1.5)
         self.render()
 
     def on_ipos_x(self, instance, value):
@@ -88,18 +89,18 @@ class Player(Image, Theme):
 
         if dx != 0 and dy != 0:
             return self.move(dx, 0) and self.move(0, dy)
-        
+
         game = self.gamefield
-        
-        hitbox_x = 1 - 2 * self.DEADZONE_X
-        hitbox_y = 1 - self.DEADZONE_Y
-    
+
+        hitbox_x = self.PLAYER_SIZE - 2 * self.DEADZONE_X
+        hitbox_y = self.PLAYER_SIZE - self.DEADZONE_Y
+
         src_x = self.pos_x + self.DEADZONE_X
         src_y = self.pos_y
 
         dest_x = src_x + dx
         dest_y = src_y + dy
-        
+
         grid_size_x = game.grid_size_x()
         grid_size_y = game.grid_size_y()
 
@@ -128,8 +129,8 @@ class Player(Image, Theme):
                             dest_x = block_x - hitbox_x
                             collision_ok = False
                             game.trigger_block(block_x, block_y)
-                            
-                    else: 
+
+                    else:
                         if dest_x < block_x + block_hitbox_x:
                             dest_x = block_x + block_hitbox_x
                             collision_ok = False
@@ -142,18 +143,18 @@ class Player(Image, Theme):
                             dest_y = block_y - hitbox_y
                             collision_ok = False
                             game.trigger_block(block_x, block_y)
-                    else: 
+                    else:
                         if dest_y < block_y + block_hitbox_y:
                             dest_y = block_y + block_hitbox_y
                             collision_ok = False
                             game.trigger_block(block_x, block_y)
-        
+
         self.pos_x += dest_x - src_x
         self.pos_y += dest_y - src_y
 
         return collision_ok
 
-        
+
 
     def update(self, dt):
         #self.move(0.01, 0)
@@ -187,7 +188,7 @@ class Player(Image, Theme):
         if on_ground and self.jump:
             self.speed_y += jump_add
 
-        
+
 
 
         #self.speed_x += self.accel_x
@@ -323,5 +324,5 @@ class Player(Image, Theme):
         self.texture.min_filter = 'nearest'
         self.texture.mag_filter = 'nearest'
 
-    
+
 
