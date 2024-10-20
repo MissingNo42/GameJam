@@ -332,12 +332,14 @@ class Player(Image, Theme):
 
     def update_animation(self):
         self.source = f"{self.theme}/player_{self.state}{"_left" if self.flip_horizontal else ""}.gif"
+        self.anim_loop = 0
         if self.state == "walk":
             self.anim_delay = 0.07
         elif self.state == "idle":
             self.anim_delay = 0.5
         elif self.state == "jump":
-            self.anim_delay = 0.5
+            self.anim_delay = 0.05
+            self.anim_loop = 1
 
 
     def on_texture(self, instance, value):
