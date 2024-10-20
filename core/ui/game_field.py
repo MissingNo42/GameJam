@@ -192,16 +192,16 @@ class GameField(Theme):
                         p.start(i)
                     else:
                         a.start(i)
-                self.effects = [ChromaticAberationSickness0()]
+                self.effects = [ChromaticAberationSickness0(life=value)]
             return
 
-        if value < 10:
-            self.effects = [ChromaticAberationSickness0()]
+        if value < 100:
+            self.effects = [ChromaticAberationSickness0(life=value)]
 
-        elif value < 30:
+        elif value < 60:
             self.effects = [ChromaticAberationSickness1()]
 
-        elif value < 70:
+        elif value < 80:
             self.effects = [ChromaticAberationSickness2()]
 
         else:
