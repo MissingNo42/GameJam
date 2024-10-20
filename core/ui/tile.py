@@ -44,10 +44,10 @@ class Tile(Image, Theme):
         if not self.texture:
             return
 
-        if self.paralax == 1:
-            self.texture.min_filter = 'nearest'
-            self.texture.mag_filter = 'nearest'
-        else:
+        self.texture.min_filter = 'nearest'
+        self.texture.mag_filter = 'nearest'
+
+        if self.paralax != 1:
             self.fit_mode = "fill"
             self.texture.wrap = 'repeat'
             ratio = self.width / self.height

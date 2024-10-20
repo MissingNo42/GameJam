@@ -2,7 +2,7 @@ import json
 
 import kivy.resources
 from core.ui.tile import Tile
-from kivy.properties import NumericProperty, BooleanProperty, ListProperty
+from kivy.properties import NumericProperty, BooleanProperty, ListProperty, BoundedNumericProperty
 from kivy.uix.effectwidget import ScanlinesEffect
 from kivy.clock import Clock
 
@@ -18,7 +18,6 @@ __all__ = (
 class GameField(Theme):
     FPS = 30
 
-
     move_right = BooleanProperty(False)
     move_left = BooleanProperty(False)
     jump = BooleanProperty(False)
@@ -29,7 +28,9 @@ class GameField(Theme):
     level = NumericProperty(0)
     map = ListProperty([])
 
-    __slots__ = ("bg_00", "bg_01", "bg_02", "bg_03", "player", "progressbar")
+    life = BoundedNumericProperty(50, min=0, max=100, errorhandler=lambda x: 100 if x > 100 else 0)
+
+    __slots__ = ("bg_00", "bg_01", "bg_02", "bg_03", "bg_04", "player", "progressbar")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -37,9 +38,10 @@ class GameField(Theme):
         self.bg_01 = None
         self.bg_02 = None
         self.bg_03 = None
+        self.bg_04 = None
         self.player = None
         self.progressbar = None
-        
+
         # self.effects = [ScanlinesEffect()]
 
     def on_size(self, instance, value):
@@ -47,6 +49,7 @@ class GameField(Theme):
         self.bg_01.size = (self.width * 4, self.height)
         self.bg_02.size = (self.width * 4, self.height)
         self.bg_03.size = (self.width * 4, self.height)
+        self.bg_04.size = (self.width * 4, self.height)
         self.player.ipos_x = self.width * 0.2 / self.tile_size
         self.progressbar.top = self.height * 0.9
         self.progressbar.width = self.width / 6
@@ -54,9 +57,10 @@ class GameField(Theme):
 
     def on_kv_post(self, base_widget):
         self.bg_00 = Tile(source="bg_00.png", paralax=0.0, size=(self.width * 4, self.height))
-        self.bg_01 = Tile(source="bg_01.png", paralax=0.3, size=(self.width * 4, self.height))
-        self.bg_02 = Tile(source="bg_02.png", paralax=0.6, size=(self.width * 4, self.height))
-        self.bg_03 = Tile(source="bg_03.png", paralax=0.8, size=(self.width * 4, self.height))
+        self.bg_01 = Tile(source="bg_01.png", paralax=0.2, size=(self.width * 4, self.height))
+        self.bg_02 = Tile(source="bg_02.png", paralax=0.4, size=(self.width * 4, self.height))
+        self.bg_03 = Tile(source="bg_03.png", paralax=0.6, size=(self.width * 4, self.height))
+        self.bg_04 = Tile(source="bg_04.png", paralax=0.8, size=(self.width * 4, self.height))
 
         self.player = Player(gamefield=self,
                              factor=self.tile_size,
@@ -72,11 +76,13 @@ class GameField(Theme):
 
         self.player.bind(pos_x=self.move)
 
-        self.progressbar = BeerProgressBar(value=50,
+        self.progressbar = BeerProgressBar(value=self.life,
                                            x=0,
                                            top=self.height * 0.8,
                                            height=self.height / 10,
                                            theme=self.theme)
+
+        self.bind(life=self.progressbar.setter("value"))
 
         self.level = 1
         Clock.schedule_interval(self.update, 1 / self.FPS)
@@ -105,6 +111,7 @@ class GameField(Theme):
         self.add_widget(self.bg_01)
         self.add_widget(self.bg_02)
         self.add_widget(self.bg_03)
+        self.add_widget(self.bg_04)
         self.add_widget(self.player)
         self.add_widget(self.progressbar)
 
@@ -123,11 +130,10 @@ class GameField(Theme):
         for child in self.children:
             child.offsetX = value
 
-
-    def clear_block(self, x : int, y : int) -> int:
+    def clear_block(self, x : int, y : int):
         self.map[y][x] = 0
         self.render()
-    
+
     def get_block(self, x : int, y : int) -> int:
         return self.map[y][x]
 
@@ -145,8 +151,7 @@ class GameField(Theme):
         if b >= 2 and b <= 4:
             self.theme = self.theme_name[b-2]
             self.clear_block(x, y)
-
-
+            self.life += 25
 
 
     def grid_size_x(self) -> int:
@@ -154,8 +159,9 @@ class GameField(Theme):
 
     def grid_size_y(self) -> int:
         return len(self.map)
-    
+
 
     def update(self, dt):
         self.player.update(dt)
+        self.life -= 0.1
 
