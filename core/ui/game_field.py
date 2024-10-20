@@ -7,6 +7,8 @@ from kivy.uix.effectwidget import ScanlinesEffect
 from kivy.clock import Clock
 
 from .player import Player
+from .shaders import ChromaticAberationSickness1, ChromaticAberationSickness2, ChromaticAberationSickness0, \
+    ChromaticAberationSickness3
 from .theme import Theme
 from .progressbar import BeerProgressBar
 
@@ -44,7 +46,7 @@ class GameField(Theme):
         self.player = None
         self.progressbar = None
 
-        # self.effects = [ScanlinesEffect()]
+        self.effects = [ChromaticAberationSickness3()]
 
     def on_size(self, instance, value):
         self.bg_00.size = (self.width * 4, self.height)
