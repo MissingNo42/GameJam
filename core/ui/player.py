@@ -88,8 +88,8 @@ class Player(Image, Theme):
     def move(self, dx, dy) -> bool:
         if dx == dy == 0: return True
 
-        if dx != 0 and dy != 0:
-            return self.move(dx, 0) and self.move(0, dy)
+        #if dx != 0 and dy != 0:
+        #    return self.move(dx, 0) and self.move(0, dy)
 
         game = self.gamefield
 
@@ -121,21 +121,20 @@ class Player(Image, Theme):
 
                 block = game.get_block(block_x, block_y)
                 is_solid = game.is_wall(block)
-                if not is_solid: continue
 
+                game.trigger_block(block_x, block_y)
+
+                if not is_solid: continue
                 # x
                 if dx != 0:
                     if dx > 0:
                         if dest_x + hitbox_x > block_x:
                             dest_x = block_x - hitbox_x
                             collision_ok = False
-                            game.trigger_block(block_x, block_y)
-
                     else:
                         if dest_x < block_x + block_hitbox_x:
                             dest_x = block_x + block_hitbox_x
                             collision_ok = False
-                            game.trigger_block(block_x, block_y)
 
                 # y
                 if dy != 0:
@@ -143,12 +142,10 @@ class Player(Image, Theme):
                         if dest_y + hitbox_y > block_y:
                             dest_y = block_y - hitbox_y
                             collision_ok = False
-                            game.trigger_block(block_x, block_y)
                     else:
                         if dest_y < block_y + block_hitbox_y:
                             dest_y = block_y + block_hitbox_y
                             collision_ok = False
-                            game.trigger_block(block_x, block_y)
 
         self.pos_x += dest_x - src_x
         self.pos_y += dest_y - src_y

@@ -11,7 +11,7 @@ class Theme(Widget):
     theme = StringProperty("irland")
 
     def on_theme(self, instance, value):
-        super().on_theme(instance, value)
+        #super().on_theme(instance, value)
 
         for i in self.children:
             if isinstance(i, Theme):

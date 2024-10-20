@@ -123,14 +123,31 @@ class GameField(Theme):
         for child in self.children:
             child.offsetX = value
 
-    def get_block(self, x : int, y : int) -> Tile:
+
+    def clear_block(self, x : int, y : int) -> int:
+        self.map[y][x] = 0
+        self.render()
+    
+    def get_block(self, x : int, y : int) -> int:
         return self.map[y][x]
 
     def is_wall(self, block: int) -> bool:
-        return block != 0
+        return block == 1
 
+    """
+    02 = germany
+    03 = russia
+    04 = ireland
+    """
+    theme_name = ["germany", "russia", "ireland"]
     def trigger_block(self, x : int, y : int):
-        pass
+        b = self.get_block(x, y)
+        if b >= 2 and b <= 4:
+            self.theme = self.theme_name[b-2]
+            self.clear_block(x, y)
+
+
+
 
     def grid_size_x(self) -> int:
         return len(self.map[0])
