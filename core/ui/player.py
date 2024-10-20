@@ -45,6 +45,8 @@ class Player(Image, Theme):
 
     factor = NumericProperty(0)
 
+    position_safe = []
+
     PLAYER_SIZE = 1.5
     DEADZONE_X = .2 * PLAYER_SIZE
     DEADZONE_Y = .15 * PLAYER_SIZE
@@ -164,19 +166,22 @@ class Player(Image, Theme):
     def on_flip_vertical(self, instance, value):
         self.update_animation()
 
+    banana_tick = -200
     def update(self, dt):
         #self.move(0.01, 0)
         #self.move(0, 0.001)
 
         if not self.physic_running: return
 
-        speed_add = 1/30.
+        banana_chute = self.gamefield.tick - self.banana_tick <= 30
 
-        if self.move_right:
-            self.speed_x += speed_add
-            #self.accel_x =  self.ACCEL_X
-        elif self.move_left:
-            self.speed_x -= speed_add
+        if not banana_chute:
+            speed_add = 1/30.
+            if self.move_right:
+                self.speed_x += speed_add
+                #self.accel_x =  self.ACCEL_X
+            elif self.move_left:
+                self.speed_x -= speed_add
             #self.accel_x = -self.ACCEL_X
         #else:
             #self.accel_x = 0
@@ -187,13 +192,21 @@ class Player(Image, Theme):
 
         on_ground = False
 
+        if self.pos_y <= 0:
+            (self.pos_x, self.pos_y) = self.position_safe.pop(0)
+            self.speed_x = 0
+            self.speed_y = 0
+
         if not self.move(0, self.speed_y):
             if self.speed_y < 0:
                 on_ground = True
+                self.position_safe.append((self.pos_x, self.pos_y))
+                if len(self.position_safe) >= 15:
+                    self.position_safe.pop(0)
                 self.speed_y = 0
 
         jump_add = 25/30.
-        if on_ground and self.jump:
+        if on_ground and self.jump and not banana_chute:
             self.speed_y += jump_add
 
 
@@ -205,17 +218,18 @@ class Player(Image, Theme):
         if not self.move(self.speed_x, 0):
             self.speed_x = 0
 
-        if on_ground:
-            if abs(self.speed_x) <= 0.001:
-                self.speed_x = 0
-                self.set_state("idle")
-                # idle animation
+        if not banana_chute:
+            if on_ground:
+                if abs(self.speed_x) <= 0.001:
+                    self.speed_x = 0
+                    self.set_state("idle")
+                    # idle animation
+                else:
+                    self.set_state("walk")
+                    self.flip_horizontal = self.speed_x < 0
             else:
-                self.set_state("walk")
-                self.flip_horizontal = self.speed_x < 0
-        else:
-            #self.flip_horizontal = self.speed_x < 0
-            self.set_state("jump")
+                #self.flip_horizontal = self.speed_x < 0
+                self.set_state("jump")
 
 
 
@@ -337,6 +351,8 @@ class Player(Image, Theme):
         elif self.state == "jump":
             self.anim_delay = 0.08
             self.anim_loop = 1
+        elif self.state == "chute":
+            self.anim_delay = 0.05
         elif self.state == "die":
             self.anim_delay = 0.09
             self.anim_loop = 1

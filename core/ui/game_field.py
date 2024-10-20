@@ -9,6 +9,8 @@ from kivy.uix.effectwidget import ScanlinesEffect
 from kivy.clock import Clock
 
 from .player import Player
+from .shaders import ChromaticAberationSickness1, ChromaticAberationSickness2, ChromaticAberationSickness0, \
+    ChromaticAberationSickness3
 from .theme import Theme
 from .progressbar import BeerProgressBar
 
@@ -30,6 +32,8 @@ class GameField(Theme):
     level = NumericProperty(0)
     map = ListProperty([])
 
+    tick = 0
+
     life = BoundedNumericProperty(50, min=0, max=100, errorhandler=lambda x: 100 if x > 100 else 0)
 
     __slots__ = ("bg_00", "bg_01", "bg_02", "bg_03", "bg_04", "player", "progressbar")
@@ -44,7 +48,7 @@ class GameField(Theme):
         self.player = None
         self.progressbar = None
 
-        # self.effects = [ScanlinesEffect()]
+        self.effects = [ChromaticAberationSickness3()]
 
     def on_size(self, instance, value):
         self.bg_00.size = (self.width * 4, self.height)
@@ -146,6 +150,8 @@ class GameField(Theme):
     02 = germany
     03 = russia
     04 = ireland
+
+    05 = banana
     """
     theme_name = ["germany", "russia", "ireland"]
     def trigger_block(self, x : int, y : int):
@@ -154,6 +160,9 @@ class GameField(Theme):
             self.theme = self.theme_name[b-2]
             self.clear_block(x, y)
             self.life += 25
+        if b == 5:
+            self.player.set_state("chute")
+
 
 
     def grid_size_x(self) -> int:
@@ -178,6 +187,7 @@ class GameField(Theme):
 
 
     def update(self, dt):
+        self.tick += 1
         self.player.update(dt)
         self.life -= 0.8
 
