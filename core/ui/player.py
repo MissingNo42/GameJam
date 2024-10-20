@@ -203,7 +203,7 @@ class Player(Image, Theme):
             (self.pos_x, self.pos_y) = self.position_safe.pop(0)
             self.speed_x = 0
             self.speed_y = 0
-            self.life -= 8
+            self.gamefield.life -= 8
 
         if not self.move(0, self.speed_y):
             if self.speed_y < 0:
