@@ -123,29 +123,31 @@ class Player(Image, Theme):
 
                 block = game.get_block(block_x, block_y)
                 is_solid = game.is_wall(block)
+                is_semi_solid = game.is_semi_solid(block)
 
                 game.trigger_block(block_x, block_y)
 
-                if not is_solid: continue
+                #if not is_solid: continue
+
                 # x
                 if dx != 0:
                     if dx > 0:
-                        if dest_x + hitbox_x > block_x:
+                        if is_solid and (dest_x + hitbox_x > block_x):
                             dest_x = block_x - hitbox_x
                             collision_ok = False
                     else:
-                        if dest_x < block_x + block_hitbox_x:
+                        if is_solid and (dest_x < block_x + block_hitbox_x):
                             dest_x = block_x + block_hitbox_x
                             collision_ok = False
 
                 # y
                 if dy != 0:
                     if dy > 0:
-                        if dest_y + hitbox_y > block_y:
+                        if is_solid and (dest_y + hitbox_y > block_y):
                             dest_y = block_y - hitbox_y
                             collision_ok = False
                     else:
-                        if dest_y < block_y + block_hitbox_y:
+                        if (is_solid or (is_semi_solid and src_y >= block_y + block_hitbox_y)) and (dest_y < block_y + block_hitbox_y):
                             dest_y = block_y + block_hitbox_y
                             collision_ok = False
 
@@ -182,6 +184,10 @@ class Player(Image, Theme):
                 #self.accel_x =  self.ACCEL_X
             elif self.move_left:
                 self.speed_x -= speed_add
+            self.speed_x *= 0.8
+        
+        if not self.move(self.speed_x, 0):
+            self.speed_x = 0
             #self.accel_x = -self.ACCEL_X
         #else:
             #self.accel_x = 0
@@ -214,9 +220,6 @@ class Player(Image, Theme):
 
         #self.speed_x += self.accel_x
         #self.speed_y += self.accel_y
-        self.speed_x *= 0.8
-        if not self.move(self.speed_x, 0):
-            self.speed_x = 0
 
         if not banana_chute:
             if on_ground:
@@ -230,6 +233,9 @@ class Player(Image, Theme):
             else:
                 #self.flip_horizontal = self.speed_x < 0
                 self.set_state("jump")
+        else:
+            self.set_state("chute")
+
 
 
 

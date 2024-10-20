@@ -27,7 +27,7 @@ class GameField(Theme):
     jump = BooleanProperty(False)
 
     offsetX = NumericProperty(0)
-    tile_size = NumericProperty(160)
+    tile_size = NumericProperty(128) #160
     effects = ListProperty([])
     level = NumericProperty(0)
     map = ListProperty([])
@@ -146,6 +146,9 @@ class GameField(Theme):
     def is_wall(self, block: int) -> bool:
         return block == 1
 
+    def is_semi_solid(self, block: int) -> bool:
+        return block == 6
+
     """
     02 = germany
     03 = russia
@@ -161,7 +164,11 @@ class GameField(Theme):
             self.clear_block(x, y)
             self.life += 25
         if b == 5:
+            self.player.speed_x *= 1.5
+            self.player.banana_tick = self.tick
             self.player.set_state("chute")
+            self.clear_block(x, y)
+
 
 
 
