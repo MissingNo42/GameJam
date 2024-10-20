@@ -56,7 +56,7 @@ class GameApp(App):
         return True
 
     def build(self):
-        self.title = "GameJam"
+        self.title = "Malivresse"
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Teal"
         Builder.load_file(dirname(__file__) + "/layout/components.kv", rulesonly=True)
