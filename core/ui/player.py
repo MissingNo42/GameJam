@@ -216,7 +216,7 @@ class Player(Image, Theme):
         else:
             #self.flip_horizontal = self.speed_x < 0
             self.set_state("jump")
-            
+
 
 
 
@@ -336,6 +336,9 @@ class Player(Image, Theme):
             self.anim_delay = 0.5
         elif self.state == "jump":
             self.anim_delay = 0.08
+            self.anim_loop = 1
+        elif self.state == "die":
+            self.anim_delay = 0.09
             self.anim_loop = 1
 
 
