@@ -198,5 +198,5 @@ class GameField(Theme):
     def update(self, dt):
         self.tick += 1
         self.player.update(dt)
-        self.life -= 0.15
+        self.life -= 0.2
 
