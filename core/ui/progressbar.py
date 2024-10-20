@@ -18,7 +18,7 @@ class BeerProgressBar(Tile):
 
     def __init__(self, **kwargs):
         self.bar = []
-        super().__init__(source="beer.gif", **kwargs)
+        super().__init__(source="drink.gif", **kwargs)
 
     def on_kv_post(self, base_widget):
         self.bar = [ProgressBar(value=self.value, max=100,

@@ -24,7 +24,7 @@ class Player(Image, Theme):
 
         SPEED_ATT_X = 0.80
     """
-    
+
     accel_x = NumericProperty(0)
     accel_y = NumericProperty(0)
 
@@ -51,6 +51,9 @@ class Player(Image, Theme):
 
     # idle, walk, jump, fall
     state = StringProperty("idle")
+
+    flip_horizontal = BooleanProperty(False)
+    flip_vertical = BooleanProperty(False)
 
     gamefield = ObjectProperty(None)
 
@@ -80,8 +83,6 @@ class Player(Image, Theme):
 
     def on_pos_y(self, instance, value):
         self.y = self.factor * self.pos_y
-
-    #def on_state(self, instance, state):
 
 
     def move(self, dx, dy) -> bool:
@@ -155,6 +156,16 @@ class Player(Image, Theme):
         return collision_ok
 
 
+    def set_state(self, state):
+        if self.state == state: return
+        self.state = state
+        self.update_animation()
+
+    def on_flip_horizontal(self, instance, value):
+        self.update_animation()
+
+    def on_flip_vertical(self, instance, value):
+        self.update_animation()
 
     def update(self, dt):
         #self.move(0.01, 0)
@@ -197,9 +208,18 @@ class Player(Image, Theme):
         if not self.move(self.speed_x, 0):
             self.speed_x = 0
 
-        if abs(self.speed_x) <= 0.00001:
-            self.speed_x = 0
-            # idle animation
+        if on_ground:
+            if abs(self.speed_x) <= 0.00001:
+                self.speed_x = 0
+                self.set_state("idle")
+                # idle animation
+            else:
+                self.set_state("walk")
+                self.flip_horizontal = self.speed_x < 0
+        else:
+            #self.flip_horizontal = self.speed_x < 0
+            self.set_state("jump")
+            
 
 
 
@@ -307,7 +327,18 @@ class Player(Image, Theme):
 
     def on_theme(self, instance, value):
         super().on_theme(instance, value)
-        self.source = f"{self.theme}/{self.source}"
+        #self.change_animation(self.source.split("/", 1)[-1])
+        self.update_animation()
+
+    def update_animation(self):
+        self.source = f"{self.theme}/player_{self.state}{"_left" if self.flip_horizontal else ""}.gif"
+        if self.state == "walk":
+            self.anim_delay = 0.07
+        elif self.state == "idle":
+            self.anim_delay = 0.5
+        elif self.state == "jump":
+            self.anim_delay = 0.5
+
 
     def on_texture(self, instance, value):
         self.config_texture(False)
