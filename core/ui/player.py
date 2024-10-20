@@ -185,7 +185,7 @@ class Player(Image, Theme):
             elif self.move_left:
                 self.speed_x -= speed_add
             self.speed_x *= 0.8
-        
+
         if not self.move(self.speed_x, 0):
             self.speed_x = 0
             #self.accel_x = -self.ACCEL_X
@@ -203,6 +203,7 @@ class Player(Image, Theme):
             (self.pos_x, self.pos_y) = self.position_safe.pop(0)
             self.speed_x = 0
             self.speed_y = 0
+            self.life -= 8
 
         if not self.move(0, self.speed_y):
             if self.speed_y < 0:
