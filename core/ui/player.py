@@ -1,7 +1,7 @@
 import math
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
-from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty
+from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty, StringProperty
 from kivy.uix.image import Image
 
 from .theme import Theme
@@ -48,6 +48,8 @@ class Player(Image, Theme):
     DEADZONE_X = .15
     DEADZONE_Y = .3
 
+    # idle, walk, jump, fall
+    state = StringProperty("idle")
 
     gamefield = ObjectProperty(None)
 
@@ -79,6 +81,8 @@ class Player(Image, Theme):
 
     def on_pos_y(self, instance, value):
         self.y = self.factor * self.pos_y
+
+    #def on_state(self, instance, state):
 
 
     def move(self, dx, dy) -> bool:
@@ -125,11 +129,13 @@ class Player(Image, Theme):
                         if dest_x + hitbox_x > block_x:
                             dest_x = block_x - hitbox_x
                             collision_ok = False
+                            game.trigger_block(block_x, block_y)
                             
                     else: 
                         if dest_x < block_x + block_hitbox_x:
                             dest_x = block_x + block_hitbox_x
                             collision_ok = False
+                            game.trigger_block(block_x, block_y)
 
                 # y
                 if dy != 0:
@@ -137,10 +143,12 @@ class Player(Image, Theme):
                         if dest_y + hitbox_y > block_y:
                             dest_y = block_y - hitbox_y
                             collision_ok = False
+                            game.trigger_block(block_x, block_y)
                     else: 
                         if dest_y < block_y + block_hitbox_y:
                             dest_y = block_y + block_hitbox_y
                             collision_ok = False
+                            game.trigger_block(block_x, block_y)
         
         self.pos_x += dest_x - src_x
         self.pos_y += dest_y - src_y
@@ -182,14 +190,17 @@ class Player(Image, Theme):
             self.speed_y += jump_add
 
         
-        #if abs(self.speed_x) <= 0.00001:
-        #    self.speed_x = 0
+
 
         #self.speed_x += self.accel_x
         #self.speed_y += self.accel_y
         self.speed_x *= 0.8
         if not self.move(self.speed_x, 0):
             self.speed_x = 0
+
+        if abs(self.speed_x) <= 0.00001:
+            self.speed_x = 0
+            # idle animation
 
 
 
@@ -313,4 +324,6 @@ class Player(Image, Theme):
 
         self.texture.min_filter = 'nearest'
         self.texture.mag_filter = 'nearest'
+
+    
 
