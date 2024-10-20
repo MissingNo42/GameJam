@@ -27,7 +27,7 @@ class GameField(Theme):
     jump = BooleanProperty(False)
 
     offsetX = NumericProperty(0)
-    tile_size = NumericProperty(160)
+    tile_size = NumericProperty(128) #160
     effects = ListProperty([])
     level = NumericProperty(0)
     map = ListProperty([])
@@ -48,7 +48,7 @@ class GameField(Theme):
         self.player = None
         self.progressbar = None
 
-        self.effects = [ChromaticAberationSickness3()]
+        self.effects = [ChromaticAberationSickness0()]
 
     def on_size(self, instance, value):
         self.bg_00.size = (self.width * 4, self.height)
@@ -196,5 +196,6 @@ class GameField(Theme):
     def update(self, dt):
         self.tick += 1
         self.player.update(dt)
-        self.life -= 0.8
+        #self.life -= 0.8
+        self.life -= 0.2
 
