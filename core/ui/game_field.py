@@ -28,7 +28,7 @@ class GameField(Theme):
 
     offsetX = NumericProperty(0)
     tile_size = NumericProperty(128) #160
-    effects = ListProperty([])
+    effects = ListProperty([ChromaticAberationSickness0(life=50)])
     level = NumericProperty(0)
     map = ListProperty([])
 
@@ -47,8 +47,6 @@ class GameField(Theme):
         self.bg_04 = None
         self.player = None
         self.progressbar = None
-
-        self.effects = []
 
     def on_size(self, instance, value):
         self.bg_00.size = (self.width * 4, self.height)
@@ -192,20 +190,9 @@ class GameField(Theme):
                         p.start(i)
                     else:
                         a.start(i)
-                self.effects = [ChromaticAberationSickness0(life=value)]
-            return
 
-        if value < 100:
-            self.effects = [ChromaticAberationSickness0(life=value)]
+        self.effects[0].life = value
 
-        elif value < 60:
-            self.effects = [ChromaticAberationSickness1()]
-
-        elif value < 80:
-            self.effects = [ChromaticAberationSickness2()]
-
-        else:
-            self.effects = [ChromaticAberationSickness3()]
 
 
     def update(self, dt):
