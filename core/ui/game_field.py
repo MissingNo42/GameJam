@@ -130,7 +130,8 @@ class GameField(Theme):
                                          y=y * self.tile_size,
                                          pos_x=x * self.tile_size,
                                          offsetX=self.offsetX,
-                                         size=(self.tile_size, self.tile_size)))
+                                         size=(self.tile_size, self.tile_size),
+                                         theme=self.theme))
 
     def on_offsetX(self, instance, value):
         for child in self.children:
@@ -168,8 +169,6 @@ class GameField(Theme):
             self.player.banana_tick = self.tick
             self.player.set_state("chute")
             self.clear_block(x, y)
-
-
 
 
     def grid_size_x(self) -> int:
