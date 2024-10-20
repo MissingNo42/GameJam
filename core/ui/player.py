@@ -236,7 +236,7 @@ class Player(Image, Theme):
         else:
             self.set_state("chute")
 
-            
+
 
 
 
@@ -359,6 +359,9 @@ class Player(Image, Theme):
             self.anim_loop = 1
         elif self.state == "chute":
             self.anim_delay = 0.05
+        elif self.state == "die":
+            self.anim_delay = 0.09
+            self.anim_loop = 1
 
 
     def on_texture(self, instance, value):

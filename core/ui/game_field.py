@@ -1,12 +1,16 @@
 import json
 
 import kivy.resources
+from kivy.animation import Animation
+
 from core.ui.tile import Tile
 from kivy.properties import NumericProperty, BooleanProperty, ListProperty, BoundedNumericProperty
 from kivy.uix.effectwidget import ScanlinesEffect
 from kivy.clock import Clock
 
 from .player import Player
+from .shaders import ChromaticAberationSickness1, ChromaticAberationSickness2, ChromaticAberationSickness0, \
+    ChromaticAberationSickness3
 from .theme import Theme
 from .progressbar import BeerProgressBar
 
@@ -44,7 +48,7 @@ class GameField(Theme):
         self.player = None
         self.progressbar = None
 
-        # self.effects = [ScanlinesEffect()]
+        self.effects = [ChromaticAberationSickness3()]
 
     def on_size(self, instance, value):
         self.bg_00.size = (self.width * 4, self.height)
@@ -174,9 +178,23 @@ class GameField(Theme):
     def grid_size_y(self) -> int:
         return len(self.map)
 
+    def on_life(self, instance, value):
+        if value <= 0:
+            if self.player.physic_running:
+                self.player.physic_running = False
+
+                a = Animation(opacity=0, duration=1, transition="in_out_cubic")
+                p = Animation(center_x=self.center_x, center_y=self.center_y, duration=2, transition="in_out_cubic")
+                p.bind(on_complete=lambda *x: self.player.set_state("die"))
+                for i in self.children:
+                    if isinstance(i, Player):
+                        p.start(i)
+                    else:
+                        a.start(i)
+
 
     def update(self, dt):
         self.tick += 1
         self.player.update(dt)
-        self.life -= 0.1
+        self.life -= 0.8
 
