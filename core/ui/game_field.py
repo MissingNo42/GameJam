@@ -29,6 +29,8 @@ class GameField(Theme):
     level = NumericProperty(0)
     map = ListProperty([])
 
+    tick = 0
+
     __slots__ = ("bg_00", "bg_01", "bg_02", "bg_03", "player", "progressbar")
 
     def __init__(self, **kwargs):
@@ -138,6 +140,8 @@ class GameField(Theme):
     02 = germany
     03 = russia
     04 = ireland
+
+    05 = banana
     """
     theme_name = ["germany", "russia", "ireland"]
     def trigger_block(self, x : int, y : int):
@@ -145,6 +149,9 @@ class GameField(Theme):
         if b >= 2 and b <= 4:
             self.theme = self.theme_name[b-2]
             self.clear_block(x, y)
+        if b == 5:
+            self.player.set_state("chute")
+
 
 
 
@@ -157,5 +164,6 @@ class GameField(Theme):
     
 
     def update(self, dt):
+        self.tick += 1
         self.player.update(dt)
 
