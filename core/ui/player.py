@@ -1,3 +1,4 @@
+import math
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty
@@ -67,7 +68,7 @@ class Player(Image, Theme):
     def on_ipos_x(self, instance, value):
         self.pos_x = self.ipos_x
         self.render()
-
+    
     def on_ipos_y(self, instance, value):
         self.pos_y = self.ipos_y
         self.render()
@@ -79,7 +80,125 @@ class Player(Image, Theme):
     def on_pos_y(self, instance, value):
         self.y = self.factor * self.pos_y
 
+
+    def move(self, dx, dy) -> bool:
+        if dx == dy == 0: return True
+
+        if dx != 0 and dy != 0:
+            return self.move(dx, 0) and self.move(0, dy)
+        
+        hitbox_x = 1 - 2 * self.DEADZONE_X
+        hitbox_y = 1 - self.DEADZONE_Y
+    
+        src_x = self.pos_x + self.DEADZONE_X
+        src_y = self.pos_y
+
+        dest_x = src_x + dx
+        dest_y = src_y + dy
+
+        lmap = None
+        if not (self.gamefield and (lmap := self.gamefield.map)):
+            return False
+        
+        grid_size_x = len(lmap[0])
+        grid_size_y = len(lmap)
+
+        x_min = max(math.floor(dest_x), 0)
+        y_min = max(math.floor(dest_y), 0)
+
+        x_max = min(math.ceil(dest_x + hitbox_x), grid_size_x)
+        y_max = min(math.ceil(dest_y + hitbox_y), grid_size_y)
+
+        block_hitbox_x = 1
+        block_hitbox_y = 1
+
+        collision_ok = True
+
+        for block_x in range(x_min, x_max):
+            for block_y in range(y_min, y_max):
+
+                block = lmap[block_y][block_x]
+                is_solid = self.gamefield.is_wall(block)
+                if not is_solid: continue
+
+                # x
+                if dx != 0:
+                    if dx > 0:
+                        if dest_x + hitbox_x > block_x:
+                            dest_x = block_x - hitbox_x
+                            collision_ok = False
+                    else: 
+                        if dest_x < block_x + block_hitbox_x:
+                            dest_x = block_x + block_hitbox_x
+                            collision_ok = False
+
+                # y
+                if dy != 0:
+                    if dy > 0:
+                        if dest_y + hitbox_y > block_y:
+                            dest_y = block_y - hitbox_y
+                            collision_ok = False
+                    else: 
+                        if dest_y < block_y + block_hitbox_y:
+                            dest_y = block_y + block_hitbox_y
+                            collision_ok = False
+        
+        self.pos_x += dest_x - src_x
+        self.pos_y += dest_y - src_y
+
+        return collision_ok
+
+        
+
     def run_physic(self, dt):
+        #self.move(0.01, 0)
+        #self.move(0, 0.001)
+
+        if not self.physic_running: return
+
+        speed_add = 1/30.
+
+        if self.move_right:
+            self.speed_x += speed_add
+            #self.accel_x =  self.ACCEL_X
+        elif self.move_left:
+            self.speed_x -= speed_add
+            #self.accel_x = -self.ACCEL_X
+        #else:
+            #self.accel_x = 0
+
+        gravity = -1/30.
+        self.speed_y += gravity
+        self.speed_y *= 0.8
+
+        on_ground = False
+
+        if not self.move(0, self.speed_y):
+            if self.speed_y < 0:
+                on_ground = True
+            self.speed_y = 0
+
+        jump_add = 25/30.
+        if on_ground and self.jump:
+            self.speed_y += jump_add
+
+        
+        #if abs(self.speed_x) <= 0.00001:
+        #    self.speed_x = 0
+
+        #self.speed_x += self.accel_x
+        #self.speed_y += self.accel_y
+        self.speed_x *= 0.8
+        if not self.move(self.speed_x, 0):
+            self.speed_x = 0
+
+
+
+        #if self.jump:
+        #    self.move(0, s)
+
+
+        """
         if self.physic_running:
 
             if self.move_right:
@@ -175,6 +294,7 @@ class Player(Image, Theme):
 
             self.accel_x = 0
             self.accel_y = 0
+            """
 
     def on_theme(self, instance, value):
         super().on_theme(instance, value)
