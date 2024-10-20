@@ -8,7 +8,7 @@ __all__ = (
 
 
 class Theme(Widget):
-    theme = StringProperty("island")
+    theme = StringProperty("irland")
 
     def on_theme(self, instance, value):
         super().on_theme(instance, value)
