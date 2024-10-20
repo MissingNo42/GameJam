@@ -48,7 +48,7 @@ class GameField(Theme):
         self.player = None
         self.progressbar = None
 
-        self.effects = [ChromaticAberationSickness3()]
+        self.effects = []
 
     def on_size(self, instance, value):
         self.bg_00.size = (self.width * 4, self.height)
@@ -184,10 +184,24 @@ class GameField(Theme):
                         p.start(i)
                     else:
                         a.start(i)
+                self.effects = [ChromaticAberationSickness0()]
+            return
+
+        if value < 10:
+            self.effects = [ChromaticAberationSickness0()]
+
+        elif value < 30:
+            self.effects = [ChromaticAberationSickness1()]
+
+        elif value < 70:
+            self.effects = [ChromaticAberationSickness2()]
+
+        else:
+            self.effects = [ChromaticAberationSickness3()]
 
 
     def update(self, dt):
         self.tick += 1
         self.player.update(dt)
-        self.life -= 0.8
+        self.life -= 0.15
 

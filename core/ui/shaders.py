@@ -1,6 +1,14 @@
 from kivy.uix.effectwidget import EffectBase
 
 
+__all__ = (
+    "ChromaticAberationSickness0",
+    "ChromaticAberationSickness1",
+    "ChromaticAberationSickness2",
+    "ChromaticAberationSickness3",
+)
+
+
 class ChromaticAberationSickness0(EffectBase):
     '''Adds scanlines to the input.'''
     def __init__(self, *args, **kwargs):
