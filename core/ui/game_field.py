@@ -113,7 +113,7 @@ class GameField(Theme):
                 for x, tile in enumerate(row):
                     if not tile:
                         continue
-                    self.add_widget(Tile(source=f"block_{tile:02}.png",
+                    self.add_widget(Tile(source=f"block_{tile:02}.gif",
                                          y=y * self.tile_size,
                                          pos_x=x * self.tile_size,
                                          offsetX=self.offsetX,

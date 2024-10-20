@@ -209,7 +209,7 @@ class Player(Image, Theme):
             self.speed_x = 0
 
         if on_ground:
-            if abs(self.speed_x) <= 0.00001:
+            if abs(self.speed_x) <= 0.001:
                 self.speed_x = 0
                 self.set_state("idle")
                 # idle animation
@@ -338,7 +338,7 @@ class Player(Image, Theme):
         elif self.state == "idle":
             self.anim_delay = 0.5
         elif self.state == "jump":
-            self.anim_delay = 0.05
+            self.anim_delay = 0.08
             self.anim_loop = 1
 
 
