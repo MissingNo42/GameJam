@@ -10,4 +10,17 @@
 <Player>:
     fit_mode: "contain"
 
-#<BeerProgressBar>:
+<GameField>:
+    canvas.before:
+        StencilPush
+        Rectangle:
+            size: self.size
+            pos: self.pos
+        StencilUse
+
+    canvas.after:
+        StencilUnUse
+        Rectangle:
+            size: self.size
+            pos: self.pos
+        StencilPop

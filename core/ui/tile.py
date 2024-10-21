@@ -1,7 +1,7 @@
 from core.ui.theme import Theme
 from kivy.graphics.texture import Texture
 from kivy.properties import NumericProperty
-from kivy.uix.image import Image
+from kivy.uix.image import Image, AsyncImage
 
 
 class Tile(Image, Theme):
@@ -60,3 +60,8 @@ class Tile(Image, Theme):
                 t = self.texture
                 self.texture = None
                 self.texture = t
+
+
+class BlockTile(Tile):
+    coordX = NumericProperty(0)
+    coordY = NumericProperty(0)

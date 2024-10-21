@@ -2,9 +2,12 @@ import json
 
 import kivy.resources
 from kivy.animation import Animation
+from kivy.graphics import Rectangle
+from kivy.graphics.instructions import InstructionGroup
+from kivy.graphics.stencil_instructions import StencilUse
 
-from core.ui.tile import Tile
-from kivy.properties import NumericProperty, BooleanProperty, ListProperty, BoundedNumericProperty
+from core.ui.tile import Tile, BlockTile
+from kivy.properties import NumericProperty, BooleanProperty, ListProperty, BoundedNumericProperty, ObjectProperty
 from kivy.uix.effectwidget import ScanlinesEffect
 from kivy.clock import Clock
 
@@ -31,6 +34,8 @@ class GameField(Theme):
     effects = ListProperty([ChromaticAberationSickness0(life=50)])
     level = NumericProperty(0)
     map = ListProperty([])
+
+    tiles = ObjectProperty(None)
 
     tick = 0
 
@@ -91,6 +96,18 @@ class GameField(Theme):
         self.level = 1
         Clock.schedule_interval(self.update, 1 / self.FPS)
 
+        self.add_widget(self.bg_00, canvas="before")
+        self.add_widget(self.bg_01, canvas="before")
+        self.add_widget(self.bg_02, canvas="before")
+        self.add_widget(self.bg_03, canvas="before")
+        self.add_widget(self.bg_04, canvas="before")
+        self.add_widget(self.player, canvas="after")
+        self.add_widget(self.progressbar, canvas="after")
+
+        self.tiles = InstructionGroup()
+        self.canvas.add(self.tiles)
+
+
     def on_level(self, instance, value):
         path = kivy.resources.resource_find(f"levels/level_{value:02}.json")
         with open(path, "r") as f:
@@ -101,6 +118,7 @@ class GameField(Theme):
     def on_map(self, instance, value):
         self.render()
 
+
     def move(self, instance, value):
         self.offsetX = (value - instance.ipos_x) * self.tile_size
 
@@ -109,22 +127,18 @@ class GameField(Theme):
         self.render()
 
     def render(self):
-        self.clear_widgets()
-
-        self.add_widget(self.bg_00)
-        self.add_widget(self.bg_01)
-        self.add_widget(self.bg_02)
-        self.add_widget(self.bg_03)
-        self.add_widget(self.bg_04)
-        self.add_widget(self.player)
-        self.add_widget(self.progressbar)
-
         if self.map:
+            for i in self.children.copy():
+                if isinstance(i, BlockTile):
+                    self.remove_widget(i)
+
             for y, row in enumerate(self.map):
                 for x, tile in enumerate(row):
                     if not tile:
                         continue
-                    self.add_widget(Tile(source=f"block_{tile:02}.gif",
+                    self.add_widget(BlockTile(source=f"block_{tile:02}.gif",
+                                              coordX=x,
+                                              coordY=y,
                                          y=y * self.tile_size,
                                          pos_x=x * self.tile_size,
                                          offsetX=self.offsetX,
@@ -137,7 +151,9 @@ class GameField(Theme):
 
     def clear_block(self, x : int, y : int):
         self.map[y][x] = 0
-        self.render()
+        for i in self.children.copy():
+            if isinstance(i, BlockTile) and i.coordX == x and i.coordY == y:
+                self.remove_widget(i)
 
     def get_block(self, x : int, y : int) -> int:
         return self.map[y][x]
