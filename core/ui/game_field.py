@@ -12,8 +12,7 @@ from kivy.uix.effectwidget import ScanlinesEffect
 from kivy.clock import Clock
 
 from .player import Player
-from .shaders import ChromaticAberationSickness1, ChromaticAberationSickness2, ChromaticAberationSickness0, \
-    ChromaticAberationSickness3
+from .shaders import ChromaticAberationSickness
 from .theme import Theme
 from .progressbar import BeerProgressBar
 
@@ -31,7 +30,7 @@ class GameField(Theme):
 
     offsetX = NumericProperty(0)
     tile_size = NumericProperty(128) #160
-    effects = ListProperty([ChromaticAberationSickness0(life=50)])
+    effects = ListProperty([ChromaticAberationSickness(life=50)])
     level = NumericProperty(0)
     map = ListProperty([])
 
